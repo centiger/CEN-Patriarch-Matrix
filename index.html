@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+<title>족장시대 Matrix</title>
+<link rel="manifest" href="./manifest.webmanifest"/>
+<meta name="theme-color" content="#071017"/>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:#071017;color:#fff;font-family:system-ui,-apple-system,"Noto Sans KR","Apple SD Gothic Neo",sans-serif;overflow-x:hidden}
+body{display:flex;justify-content:center}
+.phone{position:relative;width:100%;max-width:560px;min-height:100svh;background:#071017;overflow:visible}
+.stage{position:relative;width:100%;line-height:0;background:#071017;overflow:visible}
+.bg{display:block;width:100%;height:auto;user-select:none;pointer-events:none}
+.hot{position:absolute;z-index:10;border:0;background:rgba(255,255,255,0);border-radius:14px;cursor:pointer}
+.hot:focus-visible{outline:2px solid #f7d889;background:rgba(247,216,137,.12)}
+.hot.debug{background:rgba(247,216,137,.18);outline:1px solid rgba(247,216,137,.65)}
+
+/* 사건 전체 클릭 영역 */
+.e1,.e2,.e3,.e4,.e5{pointer-events:none}
+.e1{left:0.5%;top:8.5%;width:43.5%;height:15.5%}
+.e2{left:0.5%;top:25.0%;width:43.5%;height:15.0%}
+.e3{left:0.5%;top:41.1%;width:43.5%;height:15.0%}
+.e4{left:0.5%;top:57.4%;width:43.5%;height:14.7%}
+.e5{left:0.5%;top:73.1%;width:43.5%;height:13.4%}
+
+/* 우측 허브 버튼 영역: 실제 아이콘/버튼 중심에 맞춤 */
+/* 우측 실제 버튼 직접 클릭 영역: 보이는 버튼 위치에 재정렬 */
+.b1a,.b1b,.b1c,.b2a,.b2b,.b2c,.b3a,.b3b,.b3c,.b4a,.b4b,.b4c,.b5a,.b5b,.b5c{z-index:40}
+.b1a{left:44.2%;top:22.35%;width:17.1%;height:4.30%}
+.b1b{left:62.1%;top:22.35%;width:17.1%;height:4.30%}
+.b1c{left:79.9%;top:22.35%;width:16.8%;height:4.30%}
+
+.b2a{left:44.2%;top:41.25%;width:17.1%;height:4.30%}
+.b2b{left:62.1%;top:41.25%;width:17.1%;height:4.30%}
+.b2c{left:79.9%;top:41.25%;width:16.8%;height:4.30%}
+
+.b3a{left:44.2%;top:58.90%;width:17.1%;height:4.30%}
+.b3b{left:62.1%;top:58.90%;width:17.1%;height:4.30%}
+.b3c{left:79.9%;top:58.90%;width:16.8%;height:4.30%}
+
+.b4a{left:44.2%;top:76.00%;width:17.1%;height:4.30%}
+.b4b{left:62.1%;top:76.00%;width:17.1%;height:4.30%}
+.b4c{left:79.9%;top:76.00%;width:16.8%;height:4.30%}
+
+.b5a{left:44.2%;top:93.90%;width:17.1%;height:4.30%}
+.b5b{left:62.1%;top:93.90%;width:17.1%;height:4.30%}
+.b5c{left:79.9%;top:93.90%;width:16.8%;height:4.30%}
+
+/* 하단 메뉴 */
+.nhome{left:2.0%;top:92.95%;width:15.5%;height:5.7%}
+.nall{left:18.5%;top:92.95%;width:17.0%;height:5.7%}
+.nhub{left:37.0%;top:92.95%;width:20.0%;height:5.7%}
+.nprev{left:58.5%;top:92.95%;width:16.5%;height:5.7%}
+.nnext{left:76.0%;top:92.95%;width:22.5%;height:5.7%}
+
+.sheetBack{position:fixed;inset:0;background:rgba(0,0,0,.48);opacity:0;pointer-events:none;transition:.22s;z-index:40}
+.sheetBack.show{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:50%;bottom:0;transform:translate(-50%,105%);width:100%;max-width:560px;z-index:50;max-height:73svh;overflow:auto;background:linear-gradient(180deg,rgba(24,32,40,.98),rgba(6,11,17,.99));border:1px solid rgba(247,216,137,.28);border-bottom:0;border-radius:24px 24px 0 0;box-shadow:0 -24px 60px rgba(0,0,0,.55);padding:18px 18px calc(24px + env(safe-area-inset-bottom));transition:.26s}
+.sheet.show{transform:translate(-50%,0)}
+.grab{width:44px;height:5px;border-radius:999px;background:rgba(255,255,255,.26);margin:0 auto 14px}
+.close{position:absolute;right:16px;top:16px;width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.23);background:rgba(255,255,255,.08);color:#fff;font-size:22px}
+.sheet h2{margin:0 44px 5px 0;font-size:24px;color:#fff}
+.sheet .meta{color:#f7d889;font-weight:950;font-size:14px;margin-bottom:12px}
+.sheet p{margin:0 0 12px;color:rgba(255,255,255,.86);line-height:1.65;font-size:15px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid rgba(247,216,137,.26);background:rgba(247,216,137,.08);color:#f8e4aa;border-radius:999px;padding:8px 11px;font-size:13px;font-weight:850}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(18px);max-width:min(92vw,500px);background:rgba(8,13,18,.92);border:1px solid rgba(247,216,137,.32);color:#ffe7aa;padding:10px 14px;border-radius:999px;font-size:13px;font-weight:850;opacity:0;transition:.22s;z-index:60}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+    <link rel="stylesheet" href="style.css">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+<style>
+/* === CEN fixed footer split patch === */
+:root {
+  --cen-footer-ratio: 0.37146226;
+  --cen-max-width: 768px;
+}
+html, body {
+  margin: 0;
+  padding: 0;
+}
+body {
+  padding-bottom: calc(min(100vw, var(--cen-max-width)) * var(--cen-footer-ratio));
+  background: #020b10;
+}
+.cen-fixed-footer {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  width: min(100vw, var(--cen-max-width));
+  transform: translateX(-50%);
+  z-index: 9999;
+  pointer-events: none;
+  background: #020b10;
+  line-height: 0;
+}
+.cen-fixed-footer img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0;
+  padding: 0;
+}
+.cen-fixed-footer .footer-hot {
+  position: absolute;
+  pointer-events: auto;
+  cursor: pointer;
+  border: 0;
+  background: transparent;
+  color: transparent;
+  font-size: 0;
+  line-height: 0;
+  padding: 0;
+  margin: 0;
+}
+/* footer image = 848 x 315, crop y = 1540 */
+.cen-fixed-footer .fh-home { left: 0.5%; bottom: 0.5%; width: 17.4%; height: 48.5%; }
+.cen-fixed-footer .fh-all { left: 18.8%; bottom: 0.5%; width: 18.3%; height: 48.5%; }
+.cen-fixed-footer .fh-hub { left: 38.5%; bottom: 0.5%; width: 18.3%; height: 48.5%; }
+.cen-fixed-footer .fh-prev { left: 58.0%; bottom: 0.5%; width: 18.4%; height: 48.5%; }
+.cen-fixed-footer .fh-next { left: 77.3%; bottom: 0.5%; width: 22.1%; height: 48.5%; }
+
+/* === CEN drag/footer refinement patch 20260604 === */
+:root {
+  --cen-footer-ratio: 0.37146226;
+  --cen-max-width: 560px;
+}
+body {
+  padding-bottom: calc(min(100vw, var(--cen-max-width)) * var(--cen-footer-ratio)) !important;
+  overscroll-behavior-y: none;
+}
+.main-content {
+  padding-bottom: 0 !important;
+}
+.phone, .stage {
+  overflow: hidden !important;
+}
+.cen-fixed-footer {
+  width: min(100vw, var(--cen-max-width)) !important;
+  overflow: visible;
+  isolation: isolate;
+}
+.cen-fixed-footer::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -34px;
+  height: 34px;
+  pointer-events: none;
+  z-index: -1;
+  background: linear-gradient(180deg, rgba(7,16,23,0), rgba(7,16,23,.62) 52%, rgba(2,11,16,.96));
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+</style>
+
+</head>
+<body>
+<div class="app-container">
+<main class="phone main-content">
+<section class="stage card-grid">
+<img class="bg" src="./assets/patriarch-main.png" alt="족장시대 Matrix"/>
+
+<button class="hot e1" onclick="goHub('abraham')" aria-label="아브라함 허브"></button>
+<button class="hot e2" onclick="goHub('isaac')" aria-label="이삭 허브"></button>
+<button class="hot e3" onclick="goHub('jacob')" aria-label="야곱 허브"></button>
+<button class="hot e4" onclick="goHub('joseph')" aria-label="요셉 허브"></button>
+<button class="hot e5" onclick="goHub('egypt')" aria-label="애굽 정착 허브"></button>
+
+<button class="hot b1a" onclick="goHub('abraham')"></button><button class="hot b1b" onclick="openSheet('abraham')"></button><button class="hot b1c" onclick="openSheet('covenant')"></button>
+<button class="hot b2a" onclick="goHub('isaac')"></button><button class="hot b2b" onclick="openSheet('isaac')"></button><button class="hot b2c" onclick="openSheet('covenant')"></button>
+<button class="hot b3a" onclick="goHub('jacob')"></button><button class="hot b3b" onclick="openSheet('jacob')"></button><button class="hot b3c" onclick="openSheet('covenant')"></button>
+<button class="hot b4a" onclick="goHub('joseph')"></button><button class="hot b4b" onclick="openSheet('joseph')"></button><button class="hot b4c" onclick="openSheet('providence')"></button>
+<button class="hot b5a" onclick="goHub('egypt')"></button><button class="hot b5b" onclick="openSheet('egypt')"></button><button class="hot b5c" onclick="openSheet('exodus')"></button>
+
+<button class="hot nhome" onclick="showToast('홈 연결 준비')"></button>
+<button class="hot nall" onclick="showToast('전체 시대 Matrix 연결 준비')"></button>
+<button class="hot nhub" onclick="openSheet('hub')"></button>
+<button class="hot nprev" onclick="showToast('창조시대 Matrix 연결 준비')"></button>
+<button class="hot nnext" onclick="openSheet('exodus')"></button>
+</section>
+</main>
+
+<div class="sheetBack" id="backdrop"></div>
+<section class="sheet" id="sheet">
+<div class="grab"></div><button class="close" id="close">×</button>
+<h2 id="sheetTitle"></h2><div class="meta" id="sheetMeta"></div><p id="sheetBody"></p><div class="chips" id="chips"></div>
+</section>
+<div class="toast" id="toast"></div>
+
+<script>
+const DATA={
+abraham:{title:'아브라함 연결탐험',meta:'창 12:1-3',body:'하나님이 한 사람을 부르셔서 언약 백성의 시작을 여십니다.',chips:['부르심','가나안','별 언약','믿음']},
+isaac:{title:'이삭 연결탐험',meta:'창 22, 26장',body:'이삭은 약속의 아들이며 언약 계승의 통로입니다.',chips:['약속의 아들','모리아산','순종']},
+jacob:{title:'야곱 연결탐험',meta:'창 28, 32장',body:'야곱은 벧엘에서 하나님을 만나고 얍복강에서 이스라엘이라는 새 이름을 받습니다.',chips:['벧엘','얍복강','이스라엘']},
+joseph:{title:'요셉 연결탐험',meta:'창 37-50장',body:'요셉의 꿈과 고난은 애굽 총리라는 섭리의 자리로 이어집니다.',chips:['꿈','고난','총리','가족구원']},
+egypt:{title:'애굽 정착 연결탐험',meta:'창 46-50장, 출 1장',body:'야곱의 가족은 고센에 정착하여 번성합니다.',chips:['고센','번성','출애굽 준비']},
+covenant:{title:'언약의 흐름',meta:'아브라함 → 이삭 → 야곱 → 요셉',body:'족장시대의 핵심은 언약의 계승입니다.',chips:['언약','계승','구속사']},
+providence:{title:'섭리 탐험',meta:'요셉의 꿈과 애굽',body:'하나님은 고난까지도 생명을 보존하는 길로 사용하십니다.',chips:['섭리','용서','보존']},
+hub:{title:'족장시대 허브 탐험',meta:'5개 허브',body:'아브라함, 이삭, 야곱, 요셉, 애굽 정착 허브로 구성되어 있습니다.',chips:['아브라함','이삭','야곱','요셉','애굽정착']},
+exodus:{title:'다음 시대',meta:'출애굽·광야 Matrix',body:'애굽 정착은 출애굽 시대를 준비합니다.',chips:['모세','출애굽','광야']}
+};
+const sheet=document.getElementById('sheet'),backdrop=document.getElementById('backdrop'),title=document.getElementById('sheetTitle'),meta=document.getElementById('sheetMeta'),body=document.getElementById('sheetBody'),chips=document.getElementById('chips'),toast=document.getElementById('toast');
+function goHub(id){location.href='./hubs/index.html?hub='+encodeURIComponent(id)+'&v=20260604-v3-drag-footer'}
+function openSheet(key){const d=DATA[key]||DATA.abraham;title.textContent=d.title;meta.textContent=d.meta;body.textContent=d.body;chips.innerHTML=d.chips.map(c=>`<span class="chip">${c}</span>`).join('');sheet.classList.add('show');backdrop.classList.add('show')}
+function closeSheet(){sheet.classList.remove('show');backdrop.classList.remove('show')}
+document.getElementById('close').onclick=closeSheet;backdrop.onclick=closeSheet;
+function showToast(t){toast.textContent=t;toast.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>toast.classList.remove('show'),1200)}
+if(new URLSearchParams(location.search).get('debug')==='1'){document.querySelectorAll('.hot').forEach(el=>el.classList.add('debug'))}
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=20260604-v3-drag-footer').catch(()=>{}))}
+</script>
+</div>
+
+<div class="cen-fixed-footer" aria-label="족장시대 하단 고정 메뉴">
+  <img src="assets/patriarch-footer.png" alt="족장시대 핵심 흐름 및 하단 메뉴">
+  <button class="footer-hot fh-home" onclick="location.href='../index.html'" aria-label="홈으로">홈으로</button>
+  <button class="footer-hot fh-all" onclick="location.href='../CEN-Matrix/'" aria-label="전체 시대 Matrix">전체 시대 Matrix</button>
+  <button class="footer-hot fh-hub" onclick="location.href='hubs/index.html?hub=abraham&v=20260604-v3-drag-footer'" aria-label="허브 탐험">허브 탐험</button>
+  <button class="footer-hot fh-prev" onclick="location.href='../CEN-Creation-Matrix/'" aria-label="이전 창조시대 Matrix">이전 창조시대 Matrix</button>
+  <button class="footer-hot fh-next" onclick="location.href='../CEN-Exodus-Matrix/'" aria-label="다음 출애굽 광야 Matrix">다음 출애굽 광야 Matrix</button>
+</div>
+
+</body>
+</html>

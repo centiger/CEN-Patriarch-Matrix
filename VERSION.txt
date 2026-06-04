@@ -3,3 +3,5 @@ CEN Patriarch Matrix v3 drag preserved + shadow footer + core flow line
 - v3 hubs kept
 - footer shadow added without blur
 - cache version bumped
+
+20260604-v3-drag-shadow-flowline-limit: main drag lower bound clamp added; main/footer assets preserved.

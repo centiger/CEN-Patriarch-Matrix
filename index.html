@@ -85,6 +85,10 @@ html, body {
 body {
   padding-bottom: calc(min(100vw, var(--cen-max-width)) * var(--cen-footer-ratio));
   background: #020b10;
+  overscroll-behavior-y: none;
+}
+.main-content {
+  padding-bottom: 0 !important;
 }
 .cen-fixed-footer {
   position: fixed;
@@ -182,13 +186,32 @@ hub:{title:'족장시대 허브 탐험',meta:'5개 허브',body:'아브라함, �
 exodus:{title:'다음 시대',meta:'출애굽·광야 Matrix',body:'애굽 정착은 출애굽 시대를 준비합니다.',chips:['모세','출애굽','광야']}
 };
 const sheet=document.getElementById('sheet'),backdrop=document.getElementById('backdrop'),title=document.getElementById('sheetTitle'),meta=document.getElementById('sheetMeta'),body=document.getElementById('sheetBody'),chips=document.getElementById('chips'),toast=document.getElementById('toast');
-function goHub(id){location.href='./hubs/index.html?hub='+encodeURIComponent(id)+'&v=20260604-v3-drag-shadow-flowline'}
+function goHub(id){location.href='./hubs/index.html?hub='+encodeURIComponent(id)+'&v=20260604-v3-drag-shadow-flowline-limit'}
 function openSheet(key){const d=DATA[key]||DATA.abraham;title.textContent=d.title;meta.textContent=d.meta;body.textContent=d.body;chips.innerHTML=d.chips.map(c=>`<span class="chip">${c}</span>`).join('');sheet.classList.add('show');backdrop.classList.add('show')}
 function closeSheet(){sheet.classList.remove('show');backdrop.classList.remove('show')}
 document.getElementById('close').onclick=closeSheet;backdrop.onclick=closeSheet;
 function showToast(t){toast.textContent=t;toast.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>toast.classList.remove('show'),1200)}
 if(new URLSearchParams(location.search).get('debug')==='1'){document.querySelectorAll('.hot').forEach(el=>el.classList.add('debug'))}
-if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=20260604-v3-drag-shadow-flowline').catch(()=>{}))}
+function clampMainDrag(){
+  const stage=document.querySelector('.stage');
+  const footer=document.querySelector('.cen-fixed-footer');
+  if(!stage||!footer) return;
+  const footerH=footer.getBoundingClientRect().height;
+  const stageBottom=stage.getBoundingClientRect().bottom + window.scrollY;
+  const maxY=Math.max(0, Math.round(stageBottom - (window.innerHeight - footerH)));
+  if(window.scrollY > maxY) window.scrollTo(0,maxY);
+}
+let __dragClampTick=false;
+function scheduleDragClamp(){
+  if(__dragClampTick) return;
+  __dragClampTick=true;
+  requestAnimationFrame(()=>{__dragClampTick=false;clampMainDrag();});
+}
+window.addEventListener('scroll',scheduleDragClamp,{passive:true});
+window.addEventListener('resize',scheduleDragClamp);
+window.addEventListener('orientationchange',()=>setTimeout(clampMainDrag,250));
+window.addEventListener('load',clampMainDrag);
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=20260604-v3-drag-shadow-flowline-limit-limit').catch(()=>{}))}
 </script>
 </div>
 
@@ -196,7 +219,7 @@ if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.se
   <img src="assets/patriarch-footer.png" alt="족장시대 핵심 흐름 및 하단 메뉴">
   <button class="footer-hot fh-home" onclick="location.href='../index.html'" aria-label="홈으로">홈으로</button>
   <button class="footer-hot fh-all" onclick="location.href='../CEN-Matrix/'" aria-label="전체 시대 Matrix">전체 시대 Matrix</button>
-  <button class="footer-hot fh-hub" onclick="location.href='hubs/index.html?hub=abraham&v=20260604-v3-drag-shadow-flowline'" aria-label="허브 탐험">허브 탐험</button>
+  <button class="footer-hot fh-hub" onclick="location.href='hubs/index.html?hub=abraham&v=20260604-v3-drag-shadow-flowline-limit'" aria-label="허브 탐험">허브 탐험</button>
   <button class="footer-hot fh-prev" onclick="location.href='../CEN-Creation-Matrix/'" aria-label="이전 창조시대 Matrix">이전 창조시대 Matrix</button>
   <button class="footer-hot fh-next" onclick="location.href='../CEN-Exodus-Matrix/'" aria-label="다음 출애굽 광야 Matrix">다음 출애굽 광야 Matrix</button>
 </div>

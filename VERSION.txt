@@ -1,3 +1,4 @@
 CEN Patriarch Matrix - v3 hubs + safe footer/drag CSS patch
 Build: 2026-06-04-v3-safe-footer
 Image policy: patriarch-main.png kept at 848x1540
+20260604-v3-shadow-footer: 원본 이미지 유지, v3 허브 유지, CSS 가림, 하단 그림자, 캐시 갱신

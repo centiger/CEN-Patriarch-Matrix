@@ -1,4 +1,4 @@
-const CACHE_NAME='patriarch-matrix-20260604-v3-merged';
+const CACHE_NAME='patriarch-matrix-20260604-v3-safe-footer';
 self.addEventListener('install',event=>{self.skipWaiting();});
 self.addEventListener('activate',event=>{
   event.waitUntil(caches.keys().then(keys=>Promise.all(keys.map(k=>k!==CACHE_NAME?caches.delete(k):null))).then(()=>self.clients.claim()));

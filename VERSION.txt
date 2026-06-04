@@ -1,2 +1,3 @@
-CEN Patriarch Matrix - button links + v3 complete hubs merged
-Build: 2026-06-04-v3-merged
+CEN Patriarch Matrix - v3 hubs + safe footer/drag CSS patch
+Build: 2026-06-04-v3-safe-footer
+Image policy: patriarch-main.png kept at 848x1540

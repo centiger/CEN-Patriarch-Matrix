@@ -214,11 +214,29 @@ body {
   touch-action: auto !important;
 }
 
-/* modal must appear above fixed footer */
-.sheetBack { z-index: 20000 !important; }
-.sheet { z-index: 20001 !important; }
-.toast { z-index: 20002 !important; }
-body.sheet-open .cen-fixed-footer { pointer-events: none !important; }
+/* modal must appear above fixed footer and physically open above it */
+.sheetBack {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 2147483600 !important;
+  pointer-events: none;
+}
+.sheetBack.show { pointer-events: auto !important; }
+.sheet {
+  position: fixed !important;
+  left: 50% !important;
+  bottom: calc(var(--cen-footer-h) + env(safe-area-inset-bottom) + 6px) !important;
+  transform: translate(-50%, calc(100% + var(--cen-footer-h) + 20px)) !important;
+  z-index: 2147483601 !important;
+  max-height: calc(100svh - var(--cen-footer-h) - env(safe-area-inset-bottom) - 28px) !important;
+  pointer-events: auto !important;
+}
+.sheet.show { transform: translate(-50%, 0) !important; }
+.toast { z-index: 2147483602 !important; }
+.cen-fixed-footer { z-index: 1000 !important; }
+body.sheet-open .cen-fixed-footer { pointer-events: none !important; z-index: 1000 !important; }
+body.sheet-open .phone.main-content { pointer-events: none !important; }
+body.sheet-open .sheet, body.sheet-open .sheetBack { pointer-events: auto !important; }
 </style>
 
 </head>
@@ -268,13 +286,13 @@ hub:{title:'족장시대 허브 탐험',meta:'5개 허브',body:'아브라함, �
 exodus:{title:'다음 시대',meta:'출애굽·광야 Matrix',body:'애굽 정착은 출애굽 시대를 준비합니다.',chips:['모세','출애굽','광야']}
 };
 const sheet=document.getElementById('sheet'),backdrop=document.getElementById('backdrop'),title=document.getElementById('sheetTitle'),meta=document.getElementById('sheetMeta'),body=document.getElementById('sheetBody'),chips=document.getElementById('chips'),toast=document.getElementById('toast');
-function goHub(id){location.href='./hubs/index.html?hub='+encodeURIComponent(id)+'&v=20260606-v3-modal-top'}
+function goHub(id){location.href='./hubs/index.html?hub='+encodeURIComponent(id)+'&v=20260606-v3-modal-layer2'}
 function openSheet(key){const d=DATA[key]||DATA.abraham;title.textContent=d.title;meta.textContent=d.meta;body.textContent=d.body;chips.innerHTML=d.chips.map(c=>`<span class="chip">${c}</span>`).join('');sheet.classList.add('show');backdrop.classList.add('show');document.body.classList.add('sheet-open')}
 function closeSheet(){sheet.classList.remove('show');backdrop.classList.remove('show');document.body.classList.remove('sheet-open')}
 document.getElementById('close').onclick=closeSheet;backdrop.onclick=closeSheet;
 function showToast(t){toast.textContent=t;toast.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>toast.classList.remove('show'),1200)}
 if(new URLSearchParams(location.search).get('debug')==='1'){document.querySelectorAll('.hot').forEach(el=>el.classList.add('debug'))}
-if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=20260606-v3-modal-top').catch(()=>{}))}
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=20260606-v3-modal-layer2').catch(()=>{}))}
 </script>
 </div>
 
@@ -282,7 +300,7 @@ if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.se
   <img src="assets/patriarch-footer.png" alt="족장시대 핵심 흐름 및 하단 메뉴">
   <button class="footer-hot fh-home" onclick="location.href='../index.html'" aria-label="홈으로">홈으로</button>
   <button class="footer-hot fh-all" onclick="location.href='../CEN-Matrix/'" aria-label="전체 시대 Matrix">전체 시대 Matrix</button>
-  <button class="footer-hot fh-hub" onclick="location.href='hubs/index.html?hub=abraham&v=20260606-v3-modal-top'" aria-label="허브 탐험">허브 탐험</button>
+  <button class="footer-hot fh-hub" onclick="location.href='hubs/index.html?hub=abraham&v=20260606-v3-modal-layer2'" aria-label="허브 탐험">허브 탐험</button>
   <button class="footer-hot fh-prev" onclick="location.href='../CEN-Creation-Matrix/'" aria-label="이전 창조시대 Matrix">이전 창조시대 Matrix</button>
   <button class="footer-hot fh-next" onclick="location.href='../CEN-Exodus-Matrix/'" aria-label="다음 출애굽 광야 Matrix">다음 출애굽 광야 Matrix</button>
 </div>

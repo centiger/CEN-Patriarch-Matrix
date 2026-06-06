@@ -1,4 +1,4 @@
-const CACHE_NAME='patriarch-matrix-20260606-v3-modal-top';
+const CACHE_NAME='patriarch-matrix-20260606-v3-modal-layer2';
 self.addEventListener('install',event=>{self.skipWaiting();});
 self.addEventListener('activate',event=>{
   event.waitUntil(caches.keys().then(keys=>Promise.all(keys.map(k=>k!==CACHE_NAME?caches.delete(k):null))).then(()=>self.clients.claim()));

@@ -1,6 +1,5 @@
-CEN Patriarch Matrix v3 exodus-style drag limit
-- v3 hubs preserved
-- patriarch-main.png 848x1540 preserved
-- fixed footer with flowline and shadow preserved
-- main screen scroll constrained above fixed footer
-- cache version updated
+CEN Patriarch Matrix v3 modal layer2 fixed
+- modal bottom offset above fixed footer
+- maximum z-index layer
+- v3 hubs and drag limit preserved
+- cache version 20260606-v3-modal-layer2
